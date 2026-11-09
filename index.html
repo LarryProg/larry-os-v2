@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<title>Larry OS v2</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet" />
+<script src="vendor/chart.umd.min.js"></script>
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<script src="js/storage.js"></script>
+
+<link rel="stylesheet" href="css/app.css" />
+<link rel="stylesheet" href="css/v2.css" />
+</head>
+<body>
+
+<button id="sb-hamburger" onclick="toggleSidebar()" aria-label="Menú">☰</button>
+<div id="sb-overlay-mobile" onclick="closeSidebar()"></div>
+<div id="larry-shell">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside id="sidebar">
+    <div class="sb-logo" style="padding:16px 18px 14px;text-align:center;">
+      <img src="img/logo.jpg" alt="LARRY" style="width:100%;max-width:154px;display:block;margin:0 auto 4px;filter:invert(1);mix-blend-mode:multiply;">
+      <div class="sb-sub">PRODUCER · OS &nbsp;<span style="opacity:.55;font-size:8px;letter-spacing:.1em;">v2.0</span></div>
+    </div>
+
+    <div class="sb-section-wrap"><div class="sb-section">
+      <div class="sb-section-label">MÓDULOS</div>
+      <button class="sb-btn" onclick="switchModule('hoy')" id="sb-hoy">
+        <span class="sb-icon">☀️</span> Hoy <span id="sb-hoy-badge" class="sb-badge" style="display:none"></span>
+      </button>
+      <button class="sb-btn active" onclick="switchModule('finanzas')" id="sb-finanzas">
+        <span class="sb-icon">💰</span> Finanzas
+      </button>
+      <button class="sb-btn" onclick="switchModule('fin-clientes')" id="sb-fin-clientes">
+        <span class="sb-icon">🎤</span> Clientes · Cobros
+      </button>
+      <button class="sb-btn" onclick="switchModule('clientes')" id="sb-clientes">
+        <span class="sb-icon">🎛️</span> Producción
+      </button>
+      <button class="sb-btn" onclick="switchModule('crm')" id="sb-crm">
+        <span class="sb-icon">⬡</span> CRM
+      </button>
+      <button class="sb-btn" onclick="switchModule('agenda')" id="sb-agenda">
+        <span class="sb-icon">📅</span> Agenda
+      </button>
+      <button class="sb-btn" onclick="switchModule('tareas')" id="sb-tareas">
+        <span class="sb-icon">📝</span> Notas
+      </button>
+      <button class="sb-btn" onclick="switchModule('myboard')" id="sb-myboard">
+        <span class="sb-icon">🗂️</span> MyBoard
+      </button>
+      <button class="sb-btn" onclick="switchModule('fiscal')" id="sb-fiscal">
+        <span class="sb-icon">🧾</span> Fiscal
+      </button>
+      <button class="sb-btn" onclick="switchModule('contratos')" id="sb-contratos">
+        <span class="sb-icon">📄</span> Contratos
+      </button>
+      <button class="sb-btn" onclick="switchModule('recursos')" id="sb-recursos">
+        <span class="sb-icon">🔗</span> Recursos
+      </button>
+    </div>
+
+    </div><!-- /sb-section-wrap -->
+
+    <div class="sb-footer">
+      <span class="sb-year" id="sb-year-label">2 0 2 6</span>
+      <div class="sb-month-label">AÑO</div>
+      <select class="sb-month-select" id="globalYear" onchange="onYearChange()" style="margin-bottom:8px"></select>
+      <div class="sb-month-label">MES ACTIVO</div>
+      <select class="sb-month-select" id="globalMonth" onchange="onMonthChange()"></select>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+        <button onclick="openGlobalSearch&&openGlobalSearch()" title="Búsqueda global (Cmd+K)" style="width:100%;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 6px;background:rgba(44,32,16,0.05);border:1px solid #BDB5A5;border-radius:6px;color:#7A6A50;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;cursor:pointer;letter-spacing:.05em;transition:all .15s" onmouseover="this.style.background='rgba(201,168,76,0.12)'" onmouseout="this.style.background='rgba(44,32,16,0.05)'">Buscar</button>
+        <div style="display:flex;gap:6px">
+          <button onclick="backupData()" title="Descargar copia de seguridad de todos los datos" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 6px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.35);border-radius:6px;color:#C9A84C;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;cursor:pointer;letter-spacing:.05em;transition:all .15s" onmouseover="this.style.background='rgba(201,168,76,0.22)'" onmouseout="this.style.background='rgba(201,168,76,0.12)'">⬇ Backup</button>
+          <button onclick="document.getElementById('restore-input').click()" title="Cargar copia de seguridad" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 6px;background:rgba(44,32,16,0.05);border:1px solid #BDB5A5;border-radius:6px;color:#7A6A50;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;cursor:pointer;letter-spacing:.05em;transition:all .15s" onmouseover="this.style.background='rgba(44,32,16,0.1)'" onmouseout="this.style.background='rgba(44,32,16,0.05)'">⬆ Restaurar</button>
+          <input type="file" id="restore-input" accept=".json" style="display:none" onchange="restoreData(event)">
+        </div>
+        <!-- ═══ GITHUB SYNC (v1.5) ═══ -->
+        <div id="lsync-bar" title="Click para sincronizar ahora · ⚙ para configurar">
+          <button id="lsync-status" onclick="LarrySync.manualPush()">
+            <span class="lsync-dot lsync-unconfigured"></span>
+            <span class="lsync-text">No configurado</span>
+          </button>
+          <button id="lsync-cog" onclick="LarrySync.openModal()" title="Configurar sincronización con GitHub">⚙</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <div id="main-content">
+
+
+    <!-- ── HOY MODULE (v2) ── -->
+    <div id="module-hoy" class="module">
+      <div id="hoy-root"></div>
+    </div>
+
+    <!-- ── FISCAL MODULE (v2) ── -->
+    <div id="module-fiscal" class="module">
+      <div id="fiscal-root"></div>
+    </div>
+
+    <!-- ── FINANZAS MODULE ── -->
+    <div id="module-finanzas" class="module active">
+      <div class="fin-wrap">
+        <div class="fin-main">
+
+          <!-- Pages -->
+          <div id="fin-page-dashboard" class="fin-page">
+            <div class="page-header">
+              <div><div class="page-title">Dashboard</div><div class="page-subtitle" id="dash-period">—</div></div>
+            </div>
+            <div class="kpi-grid">
+              <div class="kpi-card green"><div class="kpi-label">Ingresos cobrados</div><div class="kpi-value green" id="kpi-ingresos">€0</div><div class="kpi-sub">del mes seleccionado</div></div>
+              <div class="kpi-card red"><div class="kpi-label">Total gastos</div><div class="kpi-value red" id="kpi-gastos">€0</div><div class="kpi-sub">del mes seleccionado</div></div>
+              <div class="kpi-card"><div class="kpi-label">Balance neto</div><div class="kpi-value" id="kpi-balance">€0</div><div class="kpi-sub">ingresos − gastos</div></div>
+              <div class="kpi-card amber"><div class="kpi-label">Pendiente cobro</div><div class="kpi-value amber" id="kpi-pendiente">€0</div><div class="kpi-sub" id="kpi-pendiente-sub">en todos los clientes</div></div>
+            </div>
+            <!-- Progress bar: cobrado vs pendiente -->
+            <div id="dash-progress">
+              <div class="dash-prog-header">
+                <span class="dash-prog-title">Progreso de cobro del mes</span>
+                <span class="dash-prog-pct" id="dash-prog-pct">0%</span>
+              </div>
+              <div class="dash-prog-track"><div class="dash-prog-fill" id="dash-prog-fill" style="width:0%"></div></div>
+              <div class="dash-prog-labels">
+                <span class="dash-prog-label">✅ Cobrado: <strong id="dash-prog-cobrado">€0</strong></span>
+                <span class="dash-prog-label">⏳ Pendiente: <strong id="dash-prog-pendiente">€0</strong></span>
+              </div>
+            </div>
+            <!-- Bloque cobros esta semana -->
+            <div id="dash-alert-cobros" class="card" style="display:none;margin-bottom:16px;border-color:rgba(248,81,73,0.35);background:rgba(248,81,73,0.03)">
+              <div class="card-title" style="margin-bottom:12px">
+                <span>⚠️ Cobros urgentes</span>
+                <span class="dash-alert-count badge badge-red" style="font-size:11px">0</span>
+              </div>
+              <div class="dash-alert-inner" style="display:flex;flex-direction:column;gap:6px"></div>
+            </div>
+            <div class="card" id="dash-prox-llamadas-card">
+              <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                <span>Próximas llamadas</span>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <span id="dash-pll-source" style="font-size:10px;color:#7A6A50;letter-spacing:.05em;text-transform:uppercase;margin-right:4px"></span>
+                  <button class="btn btn-ghost btn-sm" onclick="ProxLlamadas.refresh()" title="Actualizar desde el calendario">↻</button>
+                  <button class="btn btn-ghost btn-sm" onclick="ProxLlamadas.openConfig()" title="Conectar Google Calendar o Zcal">⚙</button>
+                  <button class="btn btn-primary" style="padding:4px 10px;font-size:11px" onclick="ProxLlamadas.openAdd()">+ Llamada</button>
+                </div>
+              </div>
+              <div id="dash-pll-body" style="display:flex;flex-direction:column;gap:8px;margin-top:4px"></div>
+            </div>
+            <div class="card"><div class="card-title">Clientes con cobro pendiente</div>
+              <table><thead><tr><th>Cliente</th><th>Servicio</th><th>Total</th><th>Cobrado</th><th>Pendiente</th><th>Próximo cobro</th><th>Estado</th><th></th></tr></thead><tbody id="dash-pendientes-body"></tbody></table>
+            </div>
+          </div>
+
+          <div id="fin-page-graficas" class="fin-page" style="display:none">
+            <div class="page-header">
+              <div><div class="page-title">Gráficas</div><div class="page-subtitle">Visión anual completa</div></div>
+            </div>
+            <div class="anual-kpi">
+              <div class="kpi-card green"><div class="kpi-label">Ingresos año</div><div class="kpi-value green" id="g-anual-ingresos">€0</div></div>
+              <div class="kpi-card red"><div class="kpi-label">Gastos año</div><div class="kpi-value red" id="g-anual-gastos">€0</div></div>
+              <div class="kpi-card"><div class="kpi-label">Resultado año</div><div class="kpi-value" id="g-anual-neto">€0</div></div>
+              <div class="kpi-card amber"><div class="kpi-label">Mejor mes</div><div class="kpi-value amber" id="g-mejor-mes">—</div><div class="kpi-sub" id="g-mejor-mes-val"></div></div>
+              <div class="kpi-card"><div class="kpi-label">Pendiente total</div><div class="kpi-value" id="g-pendiente-total">€0</div></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-title">Ingresos vs Gastos — mes a mes</div>
+              <div class="chart-card-sub" id="chart-sub-barras">Comparativa mensual 2026</div>
+              <div style="position:relative;height:240px"><canvas id="chart-barras"></canvas></div>
+            </div>
+            <div class="charts-grid-2">
+              <div class="chart-card">
+                <div class="chart-card-title">Balance neto acumulado</div>
+                <div class="chart-card-sub">Resultado acumulado a lo largo del año</div>
+                <div style="position:relative;height:200px"><canvas id="chart-acumulado"></canvas></div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-card-title">Gastos por categoría</div>
+                <div class="chart-card-sub" id="chart-sub-categorias">Año completo 2026</div>
+                <div style="position:relative;height:200px"><canvas id="chart-categorias"></canvas></div>
+              </div>
+            </div>
+            <div class="card"><div class="card-title" id="chart-sub-tabla">Resumen mes a mes 2026</div>
+              <table><thead><tr><th>Mes</th><th>Ingresos</th><th>Gastos</th><th>Resultado</th><th>Acumulado</th></tr></thead><tbody id="tabla-mensual"></tbody></table>
+            </div>
+          </div>
+
+          <div id="fin-page-clientes" class="fin-page" style="display:none">
+            <div class="page-header">
+              <div><div class="page-title">Clientes</div><div class="page-subtitle">Proyectos y cobros</div></div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <div style="display:flex;gap:6px;align-items:center">
+                  <button id="fcl-chip-all" onclick="setClientesFiltro('all')" style="padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid #C9A84C;background:#2C2010;color:#EAE4D6;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .15s">Todos</button>
+                  <button id="fcl-chip-activos" onclick="setClientesFiltro('activo')" style="padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid #CFC9B8;background:transparent;color:#7A6A50;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .15s">Solo Activos</button>
+                </div>
+                <input type="text" class="search-input" placeholder="Buscar cliente..." id="search-clientes" oninput="renderClientes()">
+                <button class="btn btn-ghost btn-sm" onclick="renderClientes();renderDashboard();showToast('✓ Clientes actualizados')" title="Actualizar tabla de clientes">↻ Actualizar</button>
+                <button class="btn btn-primary" onclick="openModalCliente()">+ Nuevo cliente</button>
+              </div>
+            </div>
+            <div class="card">
+              <table><thead><tr><th>Nombre</th><th>Servicio</th><th>Mes</th><th>Precio total</th><th>Cobrado</th><th>Pendiente</th><th>Próximo cobro</th><th>Bonus entregados</th><th>Progreso</th><th>Estado</th><th></th></tr></thead>
+              <tbody id="clientes-body"></tbody></table>
+            </div>
+          </div>
+
+          <div id="fin-page-gastos" class="fin-page" style="display:none">
+            <div class="page-header">
+              <div><div class="page-title">Gastos &amp; Balance</div><div class="page-subtitle" id="gastos-period">—</div></div>
+              <button class="btn btn-primary" onclick="openModalGasto()">+ Nuevo gasto</button>
+            </div>
+            <!-- Balance rápido del mes -->
+            <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+              <div class="kpi-card green"><div class="kpi-label">Ingresos del mes</div><div class="kpi-value green" id="bal-ingresos">€0</div></div>
+              <div class="kpi-card red"><div class="kpi-label">Gastos del mes</div><div class="kpi-value red" id="bal-gastos">€0</div></div>
+              <div class="kpi-card"><div class="kpi-label">Resultado neto</div><div class="kpi-value" id="bal-neto">€0</div></div>
+            </div>
+            <!-- Balance por cliente -->
+            <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px;color:#2C2010">Balance por cliente <span id="balance-month-label" style="font-size:12px;font-weight:400;color:#7A6A50"></span></div>
+            <div id="balance-clientes-list" style="margin-bottom:20px"></div>
+            <div class="cat-grid" id="cat-filters"></div>
+            <div class="card">
+              <div class="card-title">Gastos por categoría</div>
+              <table><thead><tr><th>Categoría</th><th>N°</th><th>Total</th></tr></thead><tbody id="balance-cat-body"></tbody></table>
+            </div>
+            <div class="card">
+              <div class="card-title">Detalle de gastos</div>
+              <table><thead><tr><th>Descripción</th><th>Categoría</th><th>Fecha</th><th>Monto</th><th></th></tr></thead>
+              <tbody id="gastos-body"></tbody></table>
+            </div>
+          </div>
+
+        </div><!-- /fin-main -->
+
+        <!-- Finanzas sub-nav (right sidebar style, hidden - using top nav instead) -->
+      </div><!-- /fin-wrap -->
+
+      <!-- Finanzas sub-nav as top tabs -->
+      <style>
+        #fin-subnav { position:absolute; top:0; left:210px; right:0; background:#EDE8DB; border-bottom:1px solid #1A1814; display:flex; gap:0; z-index:10; }
+        #fin-subnav button { padding:12px 20px; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:.1em; color:#9A8A6A; background:transparent; border:none; cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; text-transform:uppercase; }
+        #fin-subnav button:hover { color:#8B7A60; }
+        #fin-subnav button.active { color:#C9A84C; border-bottom-color:#C9A84C; }
+        #module-finanzas .fin-main { padding-top: 56px; }
+      </style>
+      <div id="fin-subnav" style="display:none">
+        <button class="active" data-fin-page="dashboard" onclick="navigateFin('dashboard',this)">◈ Dashboard</button>
+        <button data-fin-page="graficas" onclick="navigateFin('graficas',this)">◉ Gráficas</button>
+        <button data-fin-page="gastos" onclick="navigateFin('gastos',this)">◐ Gastos &amp; Balance</button>
+        <button onclick="printAnualPDF()" style="margin-left:auto;color:#C9A84C;border-bottom-color:transparent" title="Imprimir / exportar PDF completo del año">⬇ PDF Anual</button>
+      </div>
+
+      <!-- Finanzas Modals -->
+
+      <!-- ═══ PRÓXIMAS LLAMADAS ═══ -->
+      <style>
+        .pll-item { display:flex; gap:10px; padding:10px 12px; background:#F5F1E8; border:1px solid #DDD4BF; border-radius:8px; transition:all .15s; }
+        .pll-item:hover { border-color:#C9A84C; transform:translateY(-1px); box-shadow:0 4px 12px rgba(44,32,16,.06); }
+        .pll-item.today { background:#FFF8E6; border-color:#C9A84C; }
+        .pll-item.overdue { opacity:.55; }
+        .pll-date { flex-shrink:0; width:54px; text-align:center; }
+        .pll-date-day { font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:600; color:#2C2010; line-height:1; }
+        .pll-date-month { font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:#8B7A60; margin-top:2px; }
+        .pll-date-time { font-size:10px; color:#8B7A60; margin-top:4px; font-family:'IBM Plex Mono',monospace; }
+        .pll-info { flex:1; min-width:0; }
+        .pll-title { font-size:13px; font-weight:600; color:#2C2010; line-height:1.3; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .pll-meta { font-size:11px; color:#7A6A50; line-height:1.4; }
+        .pll-meta a { color:#C9A84C; text-decoration:none; }
+        .pll-meta a:hover { text-decoration:underline; }
+        .pll-actions { display:flex; gap:4px; align-items:center; flex-shrink:0; }
+        .pll-actions button { background:transparent; border:none; color:#8B7A60; cursor:pointer; padding:4px 6px; font-size:12px; border-radius:4px; }
+        .pll-actions button:hover { background:#E8DFC8; color:#2C2010; }
+        .pll-badge { display:inline-block; font-size:9px; padding:2px 6px; border-radius:3px; letter-spacing:.05em; text-transform:uppercase; font-weight:600; }
+        .pll-badge.src-cal { background:#E0E8F0; color:#3A5A8C; }
+        .pll-badge.src-manual { background:#E8DFC8; color:#8B7A60; }
+        .pll-empty { text-align:center; color:#9A8A70; padding:24px 12px; font-style:italic; font-size:12px; background:#F5F1E8; border:1px dashed #DDD4BF; border-radius:8px; }
+        .pll-config-hint { font-size:11px; color:#7A6A50; background:#F5F1E8; border-left:3px solid #C9A84C; padding:8px 10px; margin-top:8px; border-radius:0 4px 4px 0; line-height:1.5; }
+        .pll-config-hint code { background:#E8DFC8; padding:1px 4px; border-radius:2px; font-size:10px; }
+        .pll-tab { flex:1; padding:8px 12px; background:#F5F1E8; border:1px solid #DDD4BF; color:#7A6A50; font-size:12px; cursor:pointer; border-radius:6px; transition:all .15s; font-family:inherit; }
+        .pll-tab:hover { border-color:#C9A84C; color:#2C2010; }
+        .pll-tab.active { background:#C9A84C; border-color:#C9A84C; color:#fff; font-weight:600; }
+      </style>
+
+      <div id="modal-pll-config" class="modal-overlay">
+        <div class="modal">
+          <div class="modal-title">Conectar calendario</div>
+
+          <div class="form-group">
+            <label class="form-label">Tipo de fuente</label>
+            <div style="display:flex;gap:6px">
+              <button type="button" id="pll-tab-sheet" class="pll-tab active" onclick="ProxLlamadas.setSourceTab('sheet')">📊 Google Sheet (Zapier)</button>
+              <button type="button" id="pll-tab-ics" class="pll-tab" onclick="ProxLlamadas.setSourceTab('ics')">🗓 iCal directo</button>
+            </div>
+          </div>
+
+          <div id="pll-pane-sheet">
+            <div class="form-group">
+              <label class="form-label">URL de la Google Sheet publicada (CSV)</label>
+              <input class="form-input" id="pll-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+            </div>
+            <div class="pll-config-hint">
+              <strong>Recomendado para Zcal.</strong> En tu sheet, columnas (en cualquier orden):<br>
+              <code>fecha</code> · <code>hora</code> · <code>cliente</code> · <code>link</code> · <code>notas</code><br>
+              (también acepta <code>start</code>, <code>name</code>, <code>email</code>, <code>url</code>)<br><br>
+              <strong>Setup:</strong> En la sheet → <em>Archivo → Compartir → Publicar en la web</em> → tipo <em>CSV</em>. Copia esa URL aquí.<br>
+              <strong>Zapier:</strong> trigger <em>"New Booking in Zcal"</em> (o Google Calendar) → action <em>"Create Spreadsheet Row"</em>.
+            </div>
+          </div>
+
+          <div id="pll-pane-ics" style="display:none">
+            <div class="form-group">
+              <label class="form-label">URL iCal (Google Calendar o Zcal)</label>
+              <input class="form-input" id="pll-ics-url" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics">
+            </div>
+            <div class="pll-config-hint">
+              <strong>Google Calendar:</strong> Ajustes → tu calendario → <em>Integrar el calendario</em> → copia la <em>"Dirección secreta en formato iCal"</em>.<br>
+              <strong>Zcal:</strong> exporta el feed iCal de cada calendario.<br>
+              Pasa por un proxy CORS público (corsproxy.io) — para info sensible usa la opción Sheet.
+            </div>
+          </div>
+
+          <div class="modal-actions" style="margin-top:14px">
+            <button class="btn btn-ghost" onclick="ProxLlamadas.disconnect()" id="pll-btn-disconnect" style="display:none">Desconectar</button>
+            <button class="btn btn-ghost" onclick="closeModal('modal-pll-config')">Cancelar</button>
+            <button class="btn btn-primary" onclick="ProxLlamadas.saveConfig()">Guardar y sincronizar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="modal-pll-add" class="modal-overlay">
+        <div class="modal">
+          <div class="modal-title" id="modal-pll-add-title">Nueva llamada</div>
+          <input type="hidden" id="pll-id">
+          <div class="form-group">
+            <label class="form-label">Cliente / Título</label>
+            <input class="form-input" id="pll-title" placeholder="Ej: María González — descubrimiento">
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" type="date" id="pll-date"></div>
+            <div class="form-group"><label class="form-label">Hora</label><input class="form-input" type="time" id="pll-time"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Link <span style="color:#9A8A70;font-weight:400">(Zcal, Meet, Zoom...)</span></label>
+            <input class="form-input" id="pll-link" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notas <span style="color:#9A8A70;font-weight:400">(opcional)</span></label>
+            <input class="form-input" id="pll-notes" placeholder="">
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-pll-add')">Cancelar</button>
+            <button class="btn btn-danger" id="pll-btn-delete" style="display:none" onclick="ProxLlamadas.deleteManual()">✕ Eliminar</button>
+            <button class="btn btn-primary" onclick="ProxLlamadas.saveManual()">Guardar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="modal-cliente" class="modal-overlay">
+        <div class="modal">
+          <div class="modal-title" id="modal-cliente-title">Nuevo cliente</div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="c-nombre" placeholder="Nombre del cliente"></div>
+            <div class="form-group"><label class="form-label">Servicio</label>
+              <select class="form-select" id="c-servicio">
+                <option value="Beatmaking">Beatmaking</option>
+                <option value="Mix">Mix</option>
+                <option value="Master">Master</option>
+                <option value="Mix&Master">Mix&amp;Master</option>
+                <option value="Prod Completa">Prod Completa</option>
+                <option value="Ep/Lanzamiento">Ep/Lanzamiento</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Precio total (€)</label><input class="form-input" type="number" id="c-precio" placeholder="0" oninput="cModalCalc()"></div>
+            <div class="form-group"><label class="form-label">Estado</label>
+              <select class="form-select" id="c-estado">
+                <option value="activo">Activo</option>
+                <option value="completado">Completado</option>
+                <option value="pausado">Pausado</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+          <!-- PAGO AL REGISTRAR -->
+          <div style="background:rgba(63,185,80,0.07);border:1.5px solid rgba(63,185,80,0.25);border-radius:9px;padding:14px 16px;margin-bottom:14px">
+            <div id="c-cobro-section-label" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#3FB950;margin-bottom:10px;font-family:'IBM Plex Mono',monospace">💰 Cobro al registrar</div>
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Monto cobrado ahora (€)</label>
+                <input class="form-input" type="number" id="c-cobro-inicial" placeholder="0 = sin cobro aún" oninput="cModalCalc()">
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Fecha del cobro</label>
+                <input class="form-input" type="date" id="c-cobro-fecha">
+              </div>
+            </div>
+            <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:11px;color:#7A6A50;font-family:'IBM Plex Mono',monospace">Pendiente tras este cobro:</div>
+              <div id="c-pendiente-calc" style="font-size:14px;font-weight:700;color:#F85149;font-family:'IBM Plex Mono',monospace">€0</div>
+            </div>
+            <div id="c-cobro-nota-wrap" style="margin-top:8px">
+              <label class="form-label">Nota del cobro (opcional)</label>
+              <input class="form-input" id="c-cobro-nota" placeholder="Ej: Seña, pago completo, primera cuota…">
+            </div>
+            <!-- Próximo cobro — aparece cuando hay pendiente -->
+            <div id="c-prox-cobro-wrap" style="display:none;margin-top:12px;padding-top:12px;border-top:1px dashed rgba(248,81,73,0.25)">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#F85149;margin-bottom:8px;font-family:'IBM Plex Mono',monospace">📅 Próximo cobro programado</div>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Fecha del próximo cobro</label>
+                  <input class="form-input" type="date" id="c-prox-fecha">
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Etiqueta (opcional)</label>
+                  <input class="form-input" id="c-prox-label" placeholder="Ej: 2da cuota, saldo final…">
+                </div>
+              </div>
+            </div>
+          </div>
+          <details id="c-fiscal" style="border:1px solid #CFC9B8;border-radius:9px;padding:10px 14px;margin-bottom:14px">
+            <summary style="cursor:pointer;font-size:12px;font-weight:700">🧾 Datos para la factura</summary>
+            <div class="form-row" style="margin-top:10px">
+              <div class="form-group"><label class="form-label" for="c-nif">NIF / CIF / DNI</label><input class="form-input" id="c-nif" placeholder="Opcional para particulares"></div>
+              <div class="form-group"><label class="form-label" for="c-tipofiscal">Tipo</label>
+                <select class="form-select" id="c-tipofiscal"><option value="particular">Particular</option><option value="empresa">Empresa / autónomo</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label" for="c-pais">País</label>
+                <select class="form-select" id="c-pais"><option value="ES">España</option><option value="UE">Otro país de la UE</option><option value="FUERA">Fuera de la UE</option></select></div>
+              <div class="form-group"><label class="form-label" for="c-direccion">Dirección</label><input class="form-input" id="c-direccion" placeholder="Calle, CP, ciudad"></div>
+            </div>
+          </details>
+          <div class="form-group"><label class="form-label">Notas del cliente</label><textarea class="form-textarea" id="c-notas" rows="2" placeholder="Notas opcionales"></textarea></div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-cliente')">Cancelar</button>
+            <button class="btn btn-primary" onclick="saveCliente()">Guardar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="modal-pago" class="modal-overlay">
+        <div class="modal">
+          <div class="modal-title">Registrar cobro — <span id="pago-cliente-nombre"></span></div>
+          <div style="font-size:12px;color:#7A6A50;margin-bottom:16px;font-family:'IBM Plex Mono',monospace">Pendiente: <strong id="pago-pendiente-display" style="color:#F85149"></strong></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Monto (€)</label><input class="form-input" type="number" id="p-monto" placeholder="0"></div>
+            <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" type="date" id="p-fecha"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Nota (opcional)</label><input class="form-input" id="p-nota" placeholder="Ej: Señal, segunda cuota..."></div>
+          <div id="pago-historial" style="margin-top:14px;max-height:160px;overflow-y:auto"></div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-pago')">Cerrar</button>
+            <button class="btn btn-green" onclick="savePago()">Registrar cobro</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="modal-gasto" class="modal-overlay">
+        <div class="modal">
+          <div class="modal-title" id="modal-gasto-title">Nuevo gasto</div>
+          <input type="hidden" id="g-id">
+          <div class="form-group"><label class="form-label">Descripción</label><input class="form-input" id="g-desc" placeholder="¿En qué gastaste?"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Categoría</label>
+              <select class="form-select" id="g-cat">
+                <option>Meta Ads</option><option>Software</option><option>Equipamiento</option>
+                <option>Formación</option><option>Servicios</option><option>Otros</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Monto (€)</label><input class="form-input" type="number" id="g-monto" placeholder="0"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" type="date" id="g-fecha"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label" for="g-iva">IVA soportado (€)</label><input class="form-input" type="number" step="0.01" id="g-iva" placeholder="0 si no tiene"></div>
+            <div class="form-group"><label class="form-label" for="g-proveedor">Proveedor / Nº factura</label><input class="form-input" id="g-proveedor" placeholder="ej. Adobe · INV-123"></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:12px;cursor:pointer"><input type="checkbox" id="g-deducible" checked style="width:18px;height:18px"> Gasto deducible (tengo factura)</label>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-gasto')">Cancelar</button>
+            <button class="btn btn-danger" id="g-btn-delete" style="display:none" onclick="deleteGastoFromModal()">✕ Eliminar</button>
+            <button class="btn btn-primary" id="g-btn-save" onclick="saveGasto()">Guardar gasto</button>
+          </div>
+        </div>
+      </div>
+    <!-- ── FIN BONUS PANEL ── -->
+    <div id="fin-bonus-panel" style="
+      display:none; position:fixed; z-index:5000;
+      background:#EAE4D6; border:1px solid #C8C0AE;
+      border-radius:12px; padding:18px 20px; width:280px;
+      box-shadow:0 12px 40px rgba(44,32,16,0.22);
+      font-family:'DM Sans',sans-serif;
+    ">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#2C2010" id="fin-bonus-panel-name"></div>
+          <div style="font-size:10px;color:#9A8A6A;font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;margin-top:2px">BONUS ENTREGADOS</div>
+        </div>
+        <button onclick="closeFinBonusPanel()" style="background:none;border:none;font-size:18px;color:#9A8A6A;cursor:pointer;line-height:1;padding:2px 4px">×</button>
+      </div>
+      <div id="fin-bonus-grid" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="closeFinBonusPanel()" style="padding:7px 14px;background:transparent;border:1.5px solid #C8C0AE;border-radius:7px;font-size:12px;font-weight:600;color:#7A6A50;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
+        <button onclick="saveFinBonus()" style="padding:7px 14px;background:#B8882A;border:none;border-radius:7px;font-size:12px;font-weight:600;color:#0B0A09;cursor:pointer;font-family:'DM Sans',sans-serif">Guardar</button>
+      </div>
+    </div>
+
+    </div><!-- /module-finanzas -->
+
+    <!-- ── TAREAS MODULE ── -->
+    <div id="module-tareas" class="module">
+      <div id="notas-toolbar">
+        <span class="label">Color</span>
+        <div class="notas-color-dot active" data-color="#fff9a3" data-dark="#e8d800" style="background:#fff9a3" title="Amarillo"></div>
+        <div class="notas-color-dot" data-color="#b5e8f7" data-dark="#7dceed" style="background:#b5e8f7" title="Azul"></div>
+        <div class="notas-color-dot" data-color="#c8f7b5" data-dark="#8be87a" style="background:#c8f7b5" title="Verde"></div>
+        <div class="notas-color-dot" data-color="#f7b5d8" data-dark="#ef7bb8" style="background:#f7b5d8" title="Rosa"></div>
+        <div class="notas-color-dot" data-color="#e0b5f7" data-dark="#c77af7" style="background:#e0b5f7" title="Lila"></div>
+        <div class="notas-color-dot" data-color="#ffd3a3" data-dark="#ffaa52" style="background:#ffd3a3" title="Naranja"></div>
+        <div class="notas-color-dot" data-color="#ffffff" data-dark="#ddd" style="background:#fff;border:1.5px solid #ddd" title="Blanca"></div>
+        <div class="notas-sep"></div>
+        <button id="notas-addBtn">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <line x1="6.5" y1="1" x2="6.5" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <line x1="1" y1="6.5" x2="12" y2="6.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Nueva nota
+        </button>
+        <button id="notas-resetBtn" title="Centrar vista">⌂</button>
+      </div>
+
+      <div id="notas-canvas"></div>
+
+      <div id="notas-hint">
+        <div class="hint-icon">📝</div>
+        <p>No hay notas todavía</p>
+        <small>Hacé clic en "Nueva nota" o doble clic en el tablero</small>
+      </div>
+
+      <div id="notas-modal-overlay">
+        <div id="notas-modal">
+          <h3>¿Eliminar todo?</h3>
+          <p>Se van a borrar todas las notas permanentemente.</p>
+          <div class="btns">
+            <button class="btn-cancel" id="notas-cancelBtn">Cancelar</button>
+            <button class="btn-confirm" id="notas-confirmBtn">Eliminar todo</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="notas-shortcut">Ctrl+N · doble clic para nueva nota</div>
+    </div>
+
+    <!-- ── CRM MODULE ── -->
+    <div id="module-crm" class="module">
+      <div id="crm-root"></div>
+    </div>
+
+
+    <!-- ── AGENDA DE CONTENIDO MODULE ── -->
+    <div id="module-agenda" class="module">
+<div id="agenda-app">
+
+  <!-- HEADER -->
+  <header id="agenda-header">
+    <div class="header-top">
+      <div class="logo">
+        Agenda <span>Contenido</span>
+        <small id="agenda-total-label">0 piezas planificadas</small>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="agenda-btn-list" title="Vista lista">📋</button>
+        <button class="btn-icon" id="agenda-btn-export" title="Exportar JSON">💾</button>
+        <button class="btn-icon" id="agenda-btn-import-trigger" title="Importar JSON">📂</button>
+        <input type="file" id="agenda-btn-import" accept=".json" style="display:none" />
+      </div>
+    </div>
+
+    <div class="stats-bar" id="agenda-stats-bar"></div>
+
+    <div class="controls">
+      <div class="tabs">
+        <button class="tab active" data-view="semana">Semana</button>
+        <button class="tab" data-view="mes">Mes</button>
+      </div>
+      <div class="period-nav">
+        <button class="nav-btn" id="agenda-btn-prev">‹</button>
+        <span class="period-label" id="agenda-period-label"></span>
+        <button class="nav-btn" id="agenda-btn-next">›</button>
+        <button class="btn-today" id="agenda-btn-today">Hoy</button>
+      </div>
+      <div class="filters" id="agenda-type-filters"></div>
+    </div>
+  </header>
+
+  <!-- CALENDAR -->
+  <div id="agenda-calendar">
+    <div class="day-headers" id="agenda-day-headers"></div>
+    <div id="agenda-grid-area"></div>
+  </div>
+
+  <!-- LIST VIEW -->
+  <div id="agenda-list-view">
+    <div class="list-filters" id="agenda-status-filters"></div>
+    <div id="agenda-list-items"></div>
+  </div>
+
+  <!-- FAB -->
+  <button id="agenda-fab" title="Nuevo contenido">+</button>
+
+  <style>
+  /* ── Agenda · paneles de desarrollo por pieza (estilo Content Hub) ── */
+  #agenda-panels{margin-top:2px}
+  #agenda-panels .agp-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  #agenda-panels .agp-tab{border:1px solid var(--line);background:var(--bg2);color:var(--muted2);
+    font:inherit;font-size:12px;font-weight:600;padding:6px 10px;border-radius:9px;cursor:pointer;transition:all .12s;white-space:nowrap}
+  #agenda-panels .agp-tab:hover{background:var(--bg3)}
+  #agenda-panels .agp-tab.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+  #agenda-panels .agp-pane{display:none}
+  #agenda-panels .agp-pane.active{display:block}
+  #agenda-panels .agp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+  #agenda-panels .agp-chip{border:1px dashed var(--bg4);background:var(--bg2);color:var(--muted2);
+    font:inherit;font-size:11px;font-weight:600;padding:3px 8px;border-radius:7px;cursor:pointer;transition:all .12s}
+  #agenda-panels .agp-chip:hover{background:var(--bg3);border-style:solid;color:var(--text)}
+  #module-agenda #agenda-modal{width:940px;max-width:96vw}
+  #agenda-modal .agenda-cols{display:flex;gap:24px;align-items:flex-start}
+  #agenda-modal .agenda-col-left{flex:0 0 320px;min-width:0}
+  #agenda-modal .agenda-col-right{flex:1 1 auto;min-width:0}
+  @media(max-width:820px){
+    #module-agenda #agenda-modal{width:520px;max-width:96vw}
+    #agenda-modal .agenda-cols{flex-direction:column;gap:0}
+    #agenda-modal .agenda-col-left{flex:none;width:100%}
+  }
+  #agenda-panels textarea.agp-ta{width:100%;aspect-ratio:16/9;min-height:0;max-height:62vh;resize:vertical;border:1px solid var(--line);
+    border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:13px;line-height:1.55;padding:11px 12px}
+  #agenda-panels textarea.agp-ta:focus{outline:none;border-color:var(--muted)}
+  #agenda-panels .agp-wc{font-size:11px;color:var(--muted);margin-top:5px;min-height:14px}
+  #agenda-panels .agp-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  #agenda-panels .agp-metrics .i-field{display:flex;flex-direction:column;gap:4px}
+  #agenda-panels .agp-metrics label{font-size:11px;font-weight:600;color:var(--muted2)}
+  #agenda-panels .agp-metrics input{border:1px solid var(--line);border-radius:9px;background:var(--bg);
+    color:var(--text);font:inherit;font-size:13px;padding:9px 10px}
+  #agenda-panels .agp-metrics input:focus{outline:none;border-color:var(--muted)}
+  </style>
+
+  <!-- MODAL -->
+  <div class="overlay" id="agenda-overlay">
+    <div class="modal" id="agenda-modal">
+      <div class="modal-title" id="agenda-modal-title">➕ Nuevo Contenido</div>
+
+      <div class="agenda-cols">
+      <div class="agenda-col-left">
+
+      <div class="field">
+        <label>Tipo de Contenido</label>
+        <div class="type-grid" id="agenda-type-grid"></div>
+      </div>
+
+      <div class="field">
+        <label>Título / Tema</label>
+        <input type="text" id="agenda-f-title" placeholder="Ej: Tutorial de edición en 60 segs..." />
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="agenda-f-date" />
+        </div>
+        <div class="field">
+          <label>Hora</label>
+          <input type="time" id="agenda-f-time" value="12:00" />
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Plataforma</label>
+          <select id="agenda-f-platform">
+            <option>Instagram</option>
+            <option>TikTok</option>
+            <option>YouTube</option>
+            <option>Facebook</option>
+            <option>Twitter/X</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Estado</label>
+          <select id="agenda-f-status">
+            <option value="idea">💡 Idea</option>
+            <option value="produccion">🔧 En producción</option>
+            <option value="listo">✅ Listo</option>
+            <option value="publicado">🚀 Publicado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notas / Descripción</label>
+        <textarea id="agenda-f-notes" placeholder="Concepto, referencias, hashtags, copy..."></textarea>
+      </div>
+
+      </div><!-- /agenda-col-left -->
+      <div class="agenda-col-right">
+
+      <div class="field">
+        <label>🎬 Desarrollo del contenido</label>
+        <div id="agenda-panels">
+          <div class="agp-tabs"></div>
+          <div class="agp-panes"></div>
+        </div>
+      </div>
+
+      </div><!-- /agenda-col-right -->
+      </div><!-- /agenda-cols -->
+
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="agenda-btn-delete" style="display:none">Eliminar</button>
+        <button class="btn btn-ghost" id="agenda-btn-cancel">Cancelar</button>
+        <button class="btn" id="agenda-btn-save" style="background:var(--reel);color:#fff">Agregar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+    </div>
+
+    <!-- ── CLIENTES ACTUALES MODULE ── -->
+    <div id="module-clientes" class="module">
+<style>
+/* ═══ CLIENTES ACTUALES — scoped styles ═══ */
+#module-clientes {
+  --cl-cream:#f5f0e8;--cl-cream-dark:#ede6d8;--cl-cream-deep:#e4dac8;
+  --cl-warm-white:#faf7f2;--cl-ink:#2c2416;--cl-ink-mid:#5a4e3a;
+  --cl-ink-soft:#8c7d66;--cl-ink-ghost:#b8a990;--cl-divider:#d8cdb8;
+  --cl-gold:#b8883a;--cl-gold-light:#d4a855;--cl-gold-pale:rgba(184,136,58,0.1);
+  --cl-gold-border:rgba(184,136,58,0.25);--cl-red:#c0503a;--cl-red-pale:rgba(192,80,58,0.1);
+  --cl-green:#4a8c62;--cl-green-pale:rgba(74,140,98,0.1);--cl-blue:#3a6a9c;
+  --cl-blue-pale:rgba(58,106,156,0.1);--cl-orange:#c07030;--cl-orange-pale:rgba(192,112,48,0.1);
+  --cl-purple:#7a5a9c;--cl-purple-pale:rgba(122,90,156,0.1);
+  --cl-r:10px;--cl-r-sm:7px;
+  --cl-shadow-soft:0 2px 12px rgba(44,36,22,0.06);
+  --cl-shadow-card:0 4px 24px rgba(44,36,22,0.08);
+  --cl-shadow-lift:0 8px 32px rgba(44,36,22,0.13);
+  background:var(--cl-cream); overflow-y:auto;
+  font-family:'DM Sans',sans-serif; font-size:14px; color:var(--cl-ink);
+}
+#module-clientes.active { display:flex; flex-direction:column; }
+#module-clientes .cl-header {
+  background:rgba(245,240,232,0.97); border-bottom:1.5px solid var(--cl-divider);
+  padding:0 36px; display:flex; align-items:center; justify-content:space-between;
+  height:62px; box-shadow:var(--cl-shadow-soft); flex-shrink:0;
+  position:sticky; top:0; z-index:10;
+}
+#module-clientes .cl-logo {
+  font-family:'Playfair Display',serif; font-weight:700; font-size:20px;
+  color:var(--cl-ink); letter-spacing:-0.3px; display:flex; align-items:center; gap:10px;
+}
+#module-clientes .cl-logo-ornament { color:var(--cl-gold); font-size:18px; }
+#module-clientes .cl-logo-sep { width:1px; height:18px; background:var(--cl-divider); margin:0 6px; }
+#module-clientes .cl-logo-sub {
+  font-family:'DM Sans',sans-serif; font-weight:600; font-size:11px;
+  letter-spacing:1.8px; text-transform:uppercase; color:var(--cl-ink-soft);
+}
+#module-clientes .cl-btn-new {
+  background:var(--cl-ink); color:var(--cl-cream); border:none; border-radius:var(--cl-r-sm);
+  padding:9px 20px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:12px;
+  letter-spacing:0.5px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:7px;
+}
+#module-clientes .cl-btn-new:hover { background:var(--cl-gold); transform:translateY(-1px); box-shadow:0 6px 18px rgba(184,136,58,0.3); }
+#module-clientes .cl-stats-bar {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  border-bottom:1.5px solid var(--cl-divider); background:var(--cl-warm-white);
+  box-shadow:var(--cl-shadow-soft); flex-shrink:0;
+}
+#module-clientes .cl-stat-item {
+  padding:18px 28px; border-right:1px solid var(--cl-divider);
+  display:flex; flex-direction:column; gap:3px; transition:background 0.2s;
+}
+#module-clientes .cl-stat-item:last-child { border-right:none; }
+#module-clientes .cl-stat-item:hover { background:var(--cl-cream); }
+#module-clientes .cl-stat-label { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--cl-ink-ghost); }
+#module-clientes .cl-stat-value { font-family:'Playfair Display',serif; font-weight:700; font-size:28px; line-height:1.1; color:var(--cl-ink); }
+#module-clientes .cl-stat-value.gold  { color:var(--cl-gold); }
+#module-clientes .cl-stat-value.green { color:var(--cl-green); }
+#module-clientes .cl-stat-value.red   { color:var(--cl-red); }
+#module-clientes .cl-main { padding:28px 36px; flex:1; }
+#module-clientes .cl-filters { display:flex; align-items:center; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
+#module-clientes .cl-search-box { position:relative; flex:1; min-width:210px; max-width:300px; }
+#module-clientes .cl-search-box input {
+  width:100%; background:var(--cl-warm-white); border:1.5px solid var(--cl-divider);
+  border-radius:var(--cl-r-sm); padding:9px 14px 9px 35px;
+  color:var(--cl-ink); font-family:'DM Sans',sans-serif; font-size:13px;
+  outline:none; transition:border 0.2s,box-shadow 0.2s; box-shadow:var(--cl-shadow-soft);
+}
+#module-clientes .cl-search-box input:focus { border-color:var(--cl-gold); box-shadow:0 0 0 3px var(--cl-gold-pale); }
+#module-clientes .cl-search-box input::placeholder { color:var(--cl-ink-ghost); }
+#module-clientes .cl-s-icon { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--cl-ink-ghost); font-size:13px; pointer-events:none; }
+#module-clientes .cl-filter-chip {
+  background:var(--cl-warm-white); border:1.5px solid var(--cl-divider); border-radius:20px;
+  padding:6px 14px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
+  color:var(--cl-ink-soft); cursor:pointer; transition:all 0.18s; white-space:nowrap;
+  box-shadow:var(--cl-shadow-soft);
+}
+#module-clientes .cl-filter-chip:hover { border-color:var(--cl-gold); color:var(--cl-gold); background:var(--cl-gold-pale); }
+#module-clientes .cl-filter-chip.active { background:var(--cl-ink); border-color:var(--cl-ink); color:var(--cl-cream); }
+#module-clientes .cl-client-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(370px,1fr)); gap:16px; }
+#module-clientes .cl-client-card {
+  background:var(--cl-warm-white); border:1.5px solid var(--cl-divider); border-radius:var(--cl-r);
+  overflow:hidden; box-shadow:var(--cl-shadow-card);
+  transition:transform 0.22s,box-shadow 0.22s,border-color 0.22s; animation:clRiseUp 0.3s ease both;
+}
+#module-clientes .cl-client-card:hover { transform:translateY(-3px); box-shadow:var(--cl-shadow-lift); border-color:var(--cl-gold-border); }
+@keyframes clRiseUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+#module-clientes .cl-client-card.p-EP     { border-top:3px solid var(--cl-gold); }
+#module-clientes .cl-client-card.p-PROD   { border-top:3px solid var(--cl-blue); }
+#module-clientes .cl-client-card.p-BEAT   { border-top:3px solid var(--cl-orange); }
+#module-clientes .cl-client-card.p-MIX    { border-top:3px solid var(--cl-purple); }
+#module-clientes .cl-client-card.p-MASTER { border-top:3px solid var(--cl-green); }
+#module-clientes .cl-card-head {
+  padding:16px 20px 12px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+  border-bottom:1px solid var(--cl-cream-dark);
+}
+#module-clientes .cl-avatar {
+  width:40px; height:40px; border-radius:9px; background:var(--cl-cream-deep);
+  border:1.5px solid var(--cl-divider); display:flex; align-items:center; justify-content:center;
+  font-family:'Playfair Display',serif; font-weight:700; font-size:17px;
+  color:var(--cl-ink-mid); flex-shrink:0; letter-spacing:-0.5px;
+}
+#module-clientes .cl-c-name { font-family:'Playfair Display',serif; font-weight:700; font-size:17px; color:var(--cl-ink); margin-bottom:4px; letter-spacing:-0.2px; }
+#module-clientes .cl-proc-badge { display:inline-flex; align-items:center; gap:5px; border-radius:4px; padding:2px 8px; font-size:11px; font-weight:700; letter-spacing:0.3px; }
+#module-clientes .badge-EP     { background:var(--cl-gold-pale);   color:var(--cl-gold);   border:1px solid var(--cl-gold-border); }
+#module-clientes .badge-PROD   { background:var(--cl-blue-pale);   color:var(--cl-blue);   border:1px solid rgba(58,106,156,0.25); }
+#module-clientes .badge-BEAT   { background:var(--cl-orange-pale); color:var(--cl-orange); border:1px solid rgba(192,112,48,0.25); }
+#module-clientes .badge-MIX    { background:var(--cl-purple-pale); color:var(--cl-purple); border:1px solid rgba(122,90,156,0.25); }
+#module-clientes .badge-MASTER { background:var(--cl-green-pale);  color:var(--cl-green);  border:1px solid rgba(74,140,98,0.25); }
+#module-clientes .cl-stage-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.2px; white-space:nowrap; flex-shrink:0; }
+#module-clientes .cl-s-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+#module-clientes .stage-0 { background:var(--cl-cream-deep); color:var(--cl-ink-soft); border:1px solid var(--cl-divider); }
+#module-clientes .stage-0 .cl-s-dot { background:var(--cl-ink-ghost); }
+#module-clientes .stage-1 { background:var(--cl-orange-pale); color:var(--cl-orange); border:1px solid rgba(192,112,48,0.3); }
+#module-clientes .stage-1 .cl-s-dot { background:var(--cl-orange); animation:clBlink 1.4s infinite; }
+#module-clientes .stage-2 { background:var(--cl-blue-pale); color:var(--cl-blue); border:1px solid rgba(58,106,156,0.3); }
+#module-clientes .stage-2 .cl-s-dot { background:var(--cl-blue); }
+#module-clientes .stage-3 { background:var(--cl-green-pale); color:var(--cl-green); border:1px solid rgba(74,140,98,0.3); }
+#module-clientes .stage-3 .cl-s-dot { background:var(--cl-green); }
+@keyframes clBlink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+#module-clientes .cl-card-finance { display:grid; grid-template-columns:1fr 1fr 1fr; border-bottom:1px solid var(--cl-cream-dark); }
+#module-clientes .cl-fin-cell { padding:11px 16px; border-right:1px solid var(--cl-cream-dark); display:flex; flex-direction:column; gap:2px; }
+#module-clientes .cl-fin-cell:last-child { border-right:none; }
+#module-clientes .cl-fin-lbl { font-size:9px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:var(--cl-ink-ghost); }
+#module-clientes .cl-fin-val { font-family:'Playfair Display',serif; font-weight:700; font-size:17px; line-height:1.2; }
+#module-clientes .fv-total { color:var(--cl-ink-mid); }
+#module-clientes .fv-paid  { color:var(--cl-green); }
+#module-clientes .fv-due   { color:var(--cl-red); }
+#module-clientes .fv-zero  { color:var(--cl-ink-ghost); }
+#module-clientes .cl-card-dates { padding:9px 16px; border-bottom:1px solid var(--cl-cream-dark); display:flex; gap:6px; flex-wrap:wrap; }
+#module-clientes .cl-d-tag { display:inline-flex; align-items:center; gap:5px; background:var(--cl-cream); border:1px solid var(--cl-divider); border-radius:5px; padding:3px 8px; font-size:10px; color:var(--cl-ink-mid); font-weight:600; }
+#module-clientes .cl-d-tag span { color:var(--cl-ink-ghost); font-weight:500; }
+#module-clientes .cl-card-bonus { padding:11px 16px; display:flex; flex-wrap:wrap; gap:5px; border-bottom:1px solid var(--cl-cream-dark); }
+#module-clientes .cl-bon-item { display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:5px; font-size:10px; font-weight:600; }
+#module-clientes .cl-bon-check { width:13px; height:13px; border-radius:3px; display:flex; align-items:center; justify-content:center; font-size:8px; flex-shrink:0; }
+#module-clientes .cl-bon-item.done { background:var(--cl-green-pale); color:var(--cl-green); border:1px solid rgba(74,140,98,0.25); }
+#module-clientes .cl-bon-item.done .cl-bon-check { background:var(--cl-green); color:#fff; }
+#module-clientes .cl-bon-item.pend { background:var(--cl-cream); color:var(--cl-ink-ghost); border:1px dashed var(--cl-divider); }
+#module-clientes .cl-bon-item.pend .cl-bon-check { border:1px solid var(--cl-divider); }
+#module-clientes .cl-card-actions { padding:9px 16px; display:flex; gap:8px; justify-content:flex-end; }
+#module-clientes .cl-btn-xs { background:transparent; border:1px solid var(--cl-divider); border-radius:6px; padding:5px 12px; color:var(--cl-ink-soft); font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.18s; letter-spacing:0.3px; }
+#module-clientes .cl-btn-xs:hover { border-color:var(--cl-gold); color:var(--cl-gold); background:var(--cl-gold-pale); }
+#module-clientes .cl-btn-xs.del:hover { border-color:var(--cl-red); color:var(--cl-red); background:var(--cl-red-pale); }
+#module-clientes .cl-empty { text-align:center; padding:80px 20px; color:var(--cl-ink-ghost); grid-column:1/-1; }
+#module-clientes .cl-empty-icon { font-size:44px; margin-bottom:14px; opacity:0.5; }
+#module-clientes .cl-empty p { font-size:14px; font-weight:600; margin-bottom:4px; }
+#module-clientes .cl-empty small { font-size:12px; }
+/* Modal */
+#cl-overlay {
+  /* CSS vars redeclaradas aquí porque el overlay está fuera de #module-clientes */
+  --cl-cream:#f5f0e8;--cl-cream-dark:#ede6d8;--cl-cream-deep:#e4dac8;
+  --cl-warm-white:#faf7f2;--cl-ink:#2c2416;--cl-ink-mid:#5a4e3a;
+  --cl-ink-soft:#8c7d66;--cl-ink-ghost:#b8a990;--cl-divider:#d8cdb8;
+  --cl-gold:#b8883a;--cl-gold-light:#d4a855;--cl-gold-pale:rgba(184,136,58,0.1);
+  --cl-gold-border:rgba(184,136,58,0.25);--cl-red:#c0503a;--cl-red-pale:rgba(192,80,58,0.1);
+  --cl-green:#4a8c62;--cl-green-pale:rgba(74,140,98,0.1);--cl-blue:#3a6a9c;
+  --cl-blue-pale:rgba(58,106,156,0.1);--cl-orange:#c07030;--cl-orange-pale:rgba(192,112,48,0.1);
+  --cl-purple:#7a5a9c;--cl-purple-pale:rgba(122,90,156,0.1);
+  --cl-r:10px;--cl-r-sm:7px;
+  --cl-shadow-soft:0 2px 12px rgba(44,36,22,0.06);
+  --cl-shadow-card:0 4px 24px rgba(44,36,22,0.08);
+  --cl-shadow-lift:0 8px 32px rgba(44,36,22,0.13);
+  position:fixed; inset:0; background:rgba(44,36,22,0.5); backdrop-filter:blur(6px);
+  z-index:500; display:flex; align-items:center; justify-content:center; padding:20px;
+  opacity:0; pointer-events:none; transition:opacity 0.22s;
+}
+#cl-overlay.open { opacity:1; pointer-events:all; }
+#cl-overlay .cl-modal {
+  background:var(--cl-warm-white); border:1.5px solid var(--cl-divider); border-radius:14px;
+  width:100%; max-width:560px; max-height:90vh; overflow-y:auto;
+  box-shadow:0 20px 60px rgba(44,36,22,0.2); transform:translateY(18px) scale(0.97); transition:transform 0.25s;
+}
+#cl-overlay.open .cl-modal { transform:translateY(0) scale(1); }
+#cl-overlay .cl-m-head {
+  padding:22px 26px 16px; display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1.5px solid var(--cl-divider); position:sticky; top:0; background:var(--cl-warm-white); z-index:10;
+}
+#cl-overlay .cl-m-title { font-family:'Playfair Display',serif; font-weight:700; font-size:20px; color:var(--cl-ink); }
+#cl-overlay .cl-btn-close { background:var(--cl-cream); border:1px solid var(--cl-divider); border-radius:7px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; color:var(--cl-ink-soft); cursor:pointer; font-size:14px; transition:all 0.18s; }
+#cl-overlay .cl-btn-close:hover { background:var(--cl-cream-deep); color:var(--cl-ink); }
+#cl-overlay .cl-m-body { padding:22px 26px; }
+#cl-overlay .cl-f-sec { margin-bottom:22px; }
+#cl-overlay .cl-f-sec-title { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--cl-gold); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+#cl-overlay .cl-f-sec-title::after { content:''; flex:1; height:1px; background:var(--cl-cream-deep); }
+#cl-overlay .cl-f-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+#cl-overlay .cl-f-group { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+#cl-overlay label { font-size:11px; font-weight:700; letter-spacing:0.4px; color:var(--cl-ink-soft); }
+#cl-overlay input[type="text"],
+#cl-overlay input[type="number"],
+#cl-overlay input[type="date"],
+#cl-overlay select,
+#cl-overlay textarea {
+  background:var(--cl-cream); border:1.5px solid var(--cl-divider); border-radius:var(--cl-r-sm);
+  padding:9px 12px; color:var(--cl-ink); font-family:'DM Sans',sans-serif;
+  font-size:13px; font-weight:500; outline:none;
+  transition:border 0.2s,box-shadow 0.2s; width:100%;
+}
+#cl-overlay input:focus,#cl-overlay select:focus,#cl-overlay textarea:focus { border-color:var(--cl-gold); box-shadow:0 0 0 3px var(--cl-gold-pale); }
+#cl-overlay input::placeholder,#cl-overlay textarea::placeholder { color:var(--cl-ink-ghost); }
+#cl-overlay select option { background:var(--cl-warm-white); }
+#cl-overlay input[readonly] { opacity:0.6; cursor:not-allowed; }
+#cl-overlay .cl-bonus-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+#cl-overlay .cl-bon-toggle { display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--cl-cream); border:1.5px solid var(--cl-divider); border-radius:7px; cursor:pointer; transition:all 0.18s; font-size:11px; font-weight:600; color:var(--cl-ink-soft); user-select:none; }
+#cl-overlay .cl-bon-toggle:hover { border-color:var(--cl-gold-border); background:var(--cl-gold-pale); }
+#cl-overlay .cl-bon-toggle.checked { background:var(--cl-green-pale); border-color:rgba(74,140,98,0.4); color:var(--cl-green); }
+#cl-overlay .cl-t-box { width:15px; height:15px; border:1.5px solid var(--cl-divider); border-radius:4px; background:transparent; display:flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; transition:all 0.18s; }
+#cl-overlay .cl-bon-toggle.checked .cl-t-box { background:var(--cl-green); border-color:var(--cl-green); color:#fff; }
+#cl-overlay .cl-btn-add-date { background:var(--cl-cream); border:1.5px dashed var(--cl-divider); border-radius:var(--cl-r-sm); padding:7px; color:var(--cl-ink-ghost); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; text-align:center; transition:all 0.18s; width:100%; margin-top:4px; }
+#cl-overlay .cl-btn-add-date:hover { border-color:var(--cl-gold); color:var(--cl-gold); background:var(--cl-gold-pale); }
+#cl-overlay .cl-m-foot { padding:14px 26px 20px; border-top:1.5px solid var(--cl-divider); display:flex; gap:10px; justify-content:flex-end; }
+#cl-overlay .cl-btn-cancel { background:transparent; border:1.5px solid var(--cl-divider); border-radius:var(--cl-r-sm); padding:9px 18px; color:var(--cl-ink-soft); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.18s; }
+#cl-overlay .cl-btn-cancel:hover { border-color:var(--cl-ink-soft); color:var(--cl-ink); }
+#cl-overlay .cl-btn-save { background:var(--cl-ink); border:none; border-radius:var(--cl-r-sm); padding:9px 24px; color:var(--cl-cream); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+#cl-overlay .cl-btn-save:hover { background:var(--cl-gold); transform:translateY(-1px); box-shadow:0 6px 18px rgba(184,136,58,0.25); }
+</style>
+
+      <!-- Header -->
+      <div class="cl-header">
+        <div class="cl-logo">
+          <span class="cl-logo-ornament">✦</span>
+          Clientes
+          <div class="cl-logo-sep"></div>
+          <span class="cl-logo-sub" id="cl-mes-label">Actuales</span>
+        </div>
+        <button class="cl-btn-new" onclick="clOpenModal()">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Nuevo Cliente
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="cl-stats-bar">
+        <div class="cl-stat-item"><div class="cl-stat-label">Clientes Activos</div><div class="cl-stat-value" id="cl-sClientes">0</div></div>
+        <div class="cl-stat-item"><div class="cl-stat-label">Total Facturado</div><div class="cl-stat-value gold" id="cl-sTotal">€0</div></div>
+        <div class="cl-stat-item"><div class="cl-stat-label">Total Cobrado</div><div class="cl-stat-value green" id="cl-sCobrado">€0</div></div>
+        <div class="cl-stat-item"><div class="cl-stat-label">Pendiente de Cobro</div><div class="cl-stat-value red" id="cl-sPendiente">€0</div></div>
+      </div>
+
+      <!-- Main -->
+      <div class="cl-main">
+        <div class="cl-filters">
+          <div class="cl-search-box">
+            <span class="cl-s-icon">⌕</span>
+            <input type="text" id="cl-searchInput" placeholder="Buscar artista…" oninput="clRender()">
+          </div>
+          <button class="cl-filter-chip active" onclick="clSetFilter('all',this)">Todos</button>
+          <button class="cl-filter-chip" onclick="clSetFilter('0',this)">Sin Empezar</button>
+          <button class="cl-filter-chip" onclick="clSetFilter('1',this)">En Producción</button>
+          <button class="cl-filter-chip" onclick="clSetFilter('2',this)">En Revisión</button>
+          <button class="cl-filter-chip" onclick="clSetFilter('3',this)">Terminado</button>
+        </div>
+        <div class="cl-client-grid" id="cl-grid"></div>
+      </div>
+    </div>
+
+    <!-- Clientes Modal (outside module for fixed positioning) -->
+    <div id="cl-overlay" onclick="clOnOverlay(event)">
+      <div class="cl-modal">
+        <div class="cl-m-head">
+          <div class="cl-m-title" id="cl-mTitle">Nuevo Cliente</div>
+          <button class="cl-btn-close" onclick="clCloseModal()">✕</button>
+        </div>
+        <div class="cl-m-body">
+          <div class="cl-f-sec">
+            <div class="cl-f-sec-title">Artista & Proyecto</div>
+            <div class="cl-f-group">
+              <label>Nombre del Artista</label>
+              <input type="text" id="cl-fNombre" placeholder="ej. Bad Gyal, Morad…">
+            </div>
+            <div class="cl-f-row">
+              <div class="cl-f-group">
+                <label>Proceso</label>
+                <select id="cl-fProceso" onchange="clToggleEP()">
+                  <option value="EP">Ep/Lanzamiento</option>
+                  <option value="PROD">Prod Completa</option>
+                  <option value="BEAT">Beatmaking</option>
+                  <option value="MIX_SOLO">Mix</option>
+                  <option value="MIX">Mix &amp; Master</option>
+                  <option value="MASTER">Master</option>
+                </select>
+              </div>
+              <div class="cl-f-group" id="cl-epGroup">
+                <label>Nº de Canciones</label>
+                <input type="number" id="cl-fCanciones" placeholder="ej. 6" min="1" max="30">
+              </div>
+            </div>
+            <div class="cl-f-group">
+              <label>Etapa del Proceso</label>
+              <select id="cl-fEtapa">
+                <option value="0">Sin Empezar</option>
+                <option value="1">En Producción</option>
+                <option value="2">En Revisión</option>
+                <option value="3">Terminado</option>
+              </select>
+            </div>
+            <div class="cl-f-group">
+              <label>Mes de Trabajo</label>
+              <select id="cl-fMes"></select>
+            </div>
+          </div>
+          <div class="cl-f-sec">
+            <div class="cl-f-sec-title">Finanzas</div>
+            <div class="cl-f-row">
+              <div class="cl-f-group">
+                <label>Precio Total (€)</label>
+                <input type="number" id="cl-fTotal" placeholder="ej. 800" oninput="clCalcDebe()">
+              </div>
+              <div class="cl-f-group">
+                <label>Cuánto Pagó (€)</label>
+                <input type="number" id="cl-fPagado" placeholder="ej. 400" oninput="clCalcDebe()">
+              </div>
+            </div>
+            <div class="cl-f-group">
+              <label>Pendiente de Cobro (€)</label>
+              <input type="number" id="cl-fDebe" placeholder="Se calcula automático" readonly>
+            </div>
+          </div>
+          <div class="cl-f-sec">
+            <div class="cl-f-sec-title">Fechas de Pago</div>
+            <div id="cl-datesContainer"></div>
+            <button class="cl-btn-add-date" onclick="clAddDateRow()">+ Añadir fecha de pago</button>
+          </div>
+          <div class="cl-f-sec">
+            <div class="cl-f-sec-title">Bonus Entregados</div>
+            <div class="cl-bonus-grid" id="cl-bonusGrid"></div>
+          </div>
+        </div>
+        <div class="cl-m-foot">
+          <button class="cl-btn-cancel" onclick="clCloseModal()">Cancelar</button>
+          <button class="cl-btn-save" onclick="clSaveClient()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+<script src="js/clientes.js"></script>
+
+  <!-- ── MYBOARD MODULE ── -->
+  <div id="module-myboard" class="module">
+    <iframe
+      id="myboard-iframe"
+      loading="lazy"
+      src="myboard.html"
+      style="width:100%;height:100%;border:none;display:block;"
+      title="MyBoard"
+    ></iframe>
+  </div>
+
+
+  <!-- ── CONTRATOS MODULE ── -->
+  <div id="module-contratos" class="module">
+    <iframe
+      id="contratos-iframe"
+      src="contratos.html"
+      style="width:100%;height:100%;border:none;display:block;"
+      title="Contratos"
+    ></iframe>
+  </div>
+
+
+  <!-- ── RECURSOS MODULE ── -->
+  <style>
+    #module-recursos { background: #F5F0E4; }
+    #module-recursos .rec-scroll { flex:1; overflow-y:auto; padding: 28px 32px 40px; }
+    #module-recursos .rec-tabs { display:flex; gap:4px; border-bottom:1px solid #CFC9B8; margin: 20px 0 26px; }
+    #module-recursos .rec-tab {
+      padding: 10px 18px; background: transparent; border: none;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+      color: #7A6A50; cursor: pointer; letter-spacing: .04em; transition: all .15s;
+    }
+    #module-recursos .rec-tab:hover { color: #6A5A40; }
+    #module-recursos .rec-tab.active { color: #C9A84C; border-bottom-color: #C9A84C; font-weight: 700; }
+    #module-recursos .rec-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    #module-recursos .rec-category { margin-bottom: 30px; }
+    #module-recursos .rec-category:last-child { margin-bottom: 0; }
+    #module-recursos .rec-cat-header {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+    }
+    #module-recursos .rec-cat-num {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      color: #C9A84C; font-weight: 600; letter-spacing: .18em;
+    }
+    #module-recursos .rec-cat-name {
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+      color: #2C2010; text-transform: uppercase; letter-spacing: .18em;
+    }
+    #module-recursos .rec-cat-line {
+      flex: 1; height: 1px; background: #CFC9B8;
+    }
+    #module-recursos .rec-card {
+      display: flex; flex-direction: column;
+      background: #FFFFFF; border: 1px solid #CFC9B8; border-radius: 12px;
+      padding: 20px; text-decoration: none; color: inherit;
+      transition: transform .18s, box-shadow .18s, border-color .18s;
+      position: relative; overflow: hidden;
+      box-shadow: 0 1px 2px rgba(44,32,16,0.04);
+    }
+    #module-recursos .rec-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(44,32,16,0.10);
+      border-color: #C9A84C;
+    }
+    #module-recursos .rec-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    #module-recursos .rec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    #module-recursos .rec-badge {
+      width: 44px; height: 44px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      background: #FFFFFF; border: 1px solid #E8E2D2;
+      flex-shrink: 0; overflow: hidden; padding: 7px;
+    }
+    #module-recursos .rec-badge img {
+      max-width: 100%; max-height: 100%; object-fit: contain; display: block;
+    }
+    #module-recursos .rec-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #2C2010; line-height: 1.1; }
+    #module-recursos .rec-tag {
+      font-size: 9px; color: #9A8A6A; font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px;
+    }
+    #module-recursos .rec-desc { font-size: 12px; color: #7A6A50; line-height: 1.55; margin-bottom: 16px; flex: 1; }
+    #module-recursos .rec-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+      color: #C9A84C; letter-spacing: .04em;
+    }
+    #module-recursos .rec-arrow { transition: transform .18s; }
+    #module-recursos .rec-card:hover .rec-arrow { transform: translateX(4px); }
+    /* ── Mis Enlaces (custom links) ── */
+    #module-recursos .rec-add-btn {
+      padding: 7px 15px; border-radius: 8px; border: 1px solid #C9A84C;
+      background: #FFFFFF; color: #9A7A2C; font-family: 'Syne', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: .04em; cursor: pointer;
+      transition: all .15s; white-space: nowrap; flex-shrink: 0;
+    }
+    #module-recursos .rec-add-btn:hover { background: #C9A84C; color: #0B0A09; }
+    #module-recursos .rec-card-custom { padding: 0; }
+    #module-recursos .rec-card-link {
+      display: flex; flex-direction: column; flex: 1;
+      padding: 20px; text-decoration: none; color: inherit;
+    }
+    #module-recursos .rec-card-del {
+      position: absolute; top: 8px; right: 8px; z-index: 3;
+      width: 24px; height: 24px; border-radius: 6px; border: none;
+      background: rgba(44,32,16,0.06); color: #9A8A6A;
+      font-size: 16px; line-height: 1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .15s, background .15s, color .15s;
+    }
+    #module-recursos .rec-card-custom:hover .rec-card-del { opacity: 1; }
+    #module-recursos .rec-card-del:hover { background: #ED1C24; color: #FFFFFF; }
+  </style>
+  <div id="module-recursos" class="module">
+    <div class="rec-scroll">
+
+      <!-- Header -->
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:#2C2010;">Recursos</div>
+        <div style="font-size:12px; color:#9A8A6A; margin-top:4px;">Herramientas y enlaces de trabajo</div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="rec-tabs">
+        <button class="rec-tab active" data-rec-tab="accesos" onclick="switchRecursosTab('accesos')">Accesos Rápidos</button>
+      </div>
+
+      <!-- Tab: Accesos Rápidos -->
+      <div id="rec-tab-accesos">
+
+        <!-- ─── 01 BUSINESS ─── -->
+        <div class="rec-category">
+          <div class="rec-cat-header">
+            <span class="rec-cat-num">01</span>
+            <span class="rec-cat-name">Business</span>
+            <span class="rec-cat-line"></span>
+          </div>
+          <div class="rec-grid">
+
+            <a href="https://dashboard.stripe.com/acct_1Suzo5Jlw2auP12G/dashboard" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#635BFF;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=stripe.com&sz=128" alt="Stripe"></div>
+                <div>
+                  <div class="rec-name">Stripe</div>
+                  <div class="rec-tag">Pagos</div>
+                </div>
+              </div>
+              <div class="rec-desc">Panel de pagos, suscripciones y métricas de revenue.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://miro.com/app/board/uXjVGLRijGA=/" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#FFD02F;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=miro.com&sz=128" alt="Miro"></div>
+                <div>
+                  <div class="rec-name">Miro</div>
+                  <div class="rec-tag">Board</div>
+                </div>
+              </div>
+              <div class="rec-desc">Pizarra colaborativa de mapas mentales y flujos.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ─── 02 VENTA ─── -->
+        <div class="rec-category">
+          <div class="rec-cat-header">
+            <span class="rec-cat-num">02</span>
+            <span class="rec-cat-name">Venta</span>
+            <span class="rec-cat-line"></span>
+          </div>
+          <div class="rec-grid">
+
+            <a href="https://zcal.co/home" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#14B8A6;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=zcal.co&sz=128" alt="Zcal"></div>
+                <div>
+                  <div class="rec-name">Zcal</div>
+                  <div class="rec-tag">Bookings</div>
+                </div>
+              </div>
+              <div class="rec-desc">Gestión de bookings y calendario público.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://www.canva.com/design/DAHAjmwkWoU/YJkeALSAfHMhA1xqO9I3fQ/edit" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#00C4CC;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=canva.com&sz=128" alt="Canva"></div>
+                <div>
+                  <div class="rec-name">Canva</div>
+                  <div class="rec-tag">Presentación</div>
+                </div>
+              </div>
+              <div class="rec-desc">Presentación de venta principal.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://larryprog.github.io/packs/" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#ED1C24;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=larryprog.github.io&sz=128" alt="Packs"></div>
+                <div>
+                  <div class="rec-name">Packs</div>
+                  <div class="rec-tag">Servicios</div>
+                </div>
+              </div>
+              <div class="rec-desc">Catálogo de packs y servicios para presentar y vender.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://larryprog.github.io/packsv2/" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#ED1C24;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=larryprog.github.io&sz=128" alt="Packs v2"></div>
+                <div>
+                  <div class="rec-name">Packs v2</div>
+                  <div class="rec-tag">Servicios</div>
+                </div>
+              </div>
+              <div class="rec-desc">Catálogo de packs y servicios v2 para presentar y vender.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ─── 03 EMBUDO ─── -->
+        <div class="rec-category">
+          <div class="rec-cat-header">
+            <span class="rec-cat-num">03</span>
+            <span class="rec-cat-name">Embudo</span>
+            <span class="rec-cat-line"></span>
+          </div>
+          <div class="rec-grid">
+
+            <a href="https://app.manychat.com/fb4381917/cms?path=/&field=modified&order=desc" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#00C9A7;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=manychat.com&sz=128" alt="Manychat"></div>
+                <div>
+                  <div class="rec-name">Manychat</div>
+                  <div class="rec-tag">Automatización</div>
+                </div>
+              </div>
+              <div class="rec-desc">Bots y flows de Instagram / Messenger.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://lovable.dev/projects/72eac13d-c9c0-4143-96da-aff9c20fa9ac" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#FF4D8F;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=lovable.dev&sz=128" alt="Lovable"></div>
+                <div>
+                  <div class="rec-name">Lovable</div>
+                  <div class="rec-tag">Editor del proyecto</div>
+                </div>
+              </div>
+              <div class="rec-desc">Editor del proyecto de la web en Lovable.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://larry-page.lovable.app" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#C9A84C;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=larry-page.lovable.app&sz=128" alt="Mi Web"></div>
+                <div>
+                  <div class="rec-name">Mi Web</div>
+                  <div class="rec-tag">Sitio público</div>
+                </div>
+              </div>
+              <div class="rec-desc">Landing pública del proyecto.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://clarity.microsoft.com/projects/view/whmztzyv54/dashboard?date=Last%203%20days" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#0078D4;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=clarity.microsoft.com&sz=128" alt="Clarity"></div>
+                <div>
+                  <div class="rec-name">Clarity</div>
+                  <div class="rec-tag">Analytics</div>
+                </div>
+              </div>
+              <div class="rec-desc">Heatmaps y session recordings del sitio. Últimos 3 días.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ─── 04 ESCALADO ─── -->
+        <div class="rec-category">
+          <div class="rec-cat-header">
+            <span class="rec-cat-num">04</span>
+            <span class="rec-cat-name">Escalado</span>
+            <span class="rec-cat-line"></span>
+          </div>
+          <div class="rec-grid">
+
+            <a href="https://notebooklm.google.com/" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#4285F4;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=notebooklm.google.com&sz=128" alt="NotebookLM"></div>
+                <div>
+                  <div class="rec-name">NotebookLM</div>
+                  <div class="rec-tag">IA · Research</div>
+                </div>
+              </div>
+              <div class="rec-desc">Notebook de IA para investigación y notas con fuentes.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ─── 05 BONUS ─── -->
+        <div class="rec-category">
+          <div class="rec-cat-header">
+            <span class="rec-cat-num">05</span>
+            <span class="rec-cat-name">Bonus</span>
+            <span class="rec-cat-line"></span>
+          </div>
+          <div class="rec-grid">
+
+            <a href="https://larryproducer.my.canva.site/lanzamiento-exitoso" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#00C4CC;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=canva.com&sz=128" alt="Guía de Lanzamiento"></div>
+                <div>
+                  <div class="rec-name">Guía de Lanzamiento</div>
+                  <div class="rec-tag">Bonus</div>
+                </div>
+              </div>
+              <div class="rec-desc">Guía paso a paso para un lanzamiento exitoso.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://larryproducer.my.canva.site/escuchar-mezclas" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#7B61FF;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=canva.com&sz=128" alt="Escuchar Profesional"></div>
+                <div>
+                  <div class="rec-name">Escuchar Profesional</div>
+                  <div class="rec-tag">Bonus</div>
+                </div>
+              </div>
+              <div class="rec-desc">Cómo escuchar y evaluar tus mezclas como un pro.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://larryproducer.my.canva.site/vocals-top" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#FF4D8F;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=canva.com&sz=128" alt="Vocales Pro"></div>
+                <div>
+                  <div class="rec-name">Vocales Pro</div>
+                  <div class="rec-tag">Bonus</div>
+                </div>
+              </div>
+              <div class="rec-desc">Técnicas para llevar tus vocales al siguiente nivel.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://larryproducer.my.canva.site/manual-de-marca" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#C9A84C;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=canva.com&sz=128" alt="Manual de Marca"></div>
+                <div>
+                  <div class="rec-name">Manual de Marca</div>
+                  <div class="rec-tag">Bonus</div>
+                </div>
+              </div>
+              <div class="rec-desc">Identidad y lineamientos de marca del proyecto.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://larryproducer.my.canva.site/arsenal-creativo" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#14B8A6;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=canva.com&sz=128" alt="Arsenal Creativo"></div>
+                <div>
+                  <div class="rec-name">Arsenal Creativo</div>
+                  <div class="rec-tag">Bonus</div>
+                </div>
+              </div>
+              <div class="rec-desc">Recursos y herramientas para potenciar tu creatividad.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ─── 06 EXTRAS ─── -->
+        <div class="rec-category">
+          <div class="rec-cat-header">
+            <span class="rec-cat-num">06</span>
+            <span class="rec-cat-name">Extras</span>
+            <span class="rec-cat-line"></span>
+          </div>
+          <div class="rec-grid">
+
+            <a href="https://larryprod.my.canva.site/agenda-de-contenido" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#FF8A3D;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=canva.com&sz=128" alt="Agenda de Contenido"></div>
+                <div>
+                  <div class="rec-name">Agenda de Contenido</div>
+                  <div class="rec-tag">Extra</div>
+                </div>
+              </div>
+              <div class="rec-desc">Planificador de contenido para tus redes.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+            <a href="https://larryprog.github.io/elviajedelheroe/" target="_blank" rel="noopener noreferrer" class="rec-card">
+              <div class="rec-accent" style="background:#9A6BFF;"></div>
+              <div class="rec-head">
+                <div class="rec-badge"><img src="https://www.google.com/s2/favicons?domain=larryprog.github.io&sz=128" alt="El Viaje del Héroe"></div>
+                <div>
+                  <div class="rec-name">El Viaje del Héroe</div>
+                  <div class="rec-tag">Extra</div>
+                </div>
+              </div>
+              <div class="rec-desc">Framework narrativo para estructurar tu contenido.</div>
+              <div class="rec-cta">Abrir <span class="rec-arrow">→</span></div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ─── 07 MIS ENLACES ─── -->
+        <div class="rec-category">
+          <div class="rec-cat-header">
+            <span class="rec-cat-num">07</span>
+            <span class="rec-cat-name">Mis Enlaces</span>
+            <span class="rec-cat-line"></span>
+            <button class="rec-add-btn" onclick="recAddLinkOpen()">+ Agregar enlace</button>
+          </div>
+          <div id="rec-custom-empty" style="font-size:12px;color:#9A8A6A;font-style:italic;padding:6px 0 2px;">
+            Aún no agregaste enlaces. Usá “+ Agregar enlace” para guardar los tuyos.
+          </div>
+          <div class="rec-grid" id="rec-custom-grid"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Agregar enlace -->
+  <div id="rec-link-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,14,6,0.45); align-items:center; justify-content:center;">
+    <div style="background:#FFFDF7; border:1px solid #CFC9B8; border-radius:14px; padding:24px; width:340px; max-width:90vw; box-shadow:0 20px 60px rgba(0,0,0,.25); font-family:'DM Sans',sans-serif;">
+      <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:#2C2010; margin-bottom:4px;">Agregar enlace</div>
+      <div style="font-size:11px; color:#9A8A6A; margin-bottom:16px;">Guardá un link personalizado en Recursos.</div>
+      <label style="display:block; font-size:11px; font-weight:600; color:#7A6A50; margin-bottom:4px;">Nombre</label>
+      <input id="rec-link-name" type="text" placeholder="Ej. Mi documento" style="width:100%; box-sizing:border-box; padding:9px 11px; border:1.5px solid #C8C0AE; border-radius:8px; font-size:13px; color:#2C2010; margin-bottom:12px; font-family:'DM Sans',sans-serif;">
+      <label style="display:block; font-size:11px; font-weight:600; color:#7A6A50; margin-bottom:4px;">URL</label>
+      <input id="rec-link-url" type="text" placeholder="https://..." style="width:100%; box-sizing:border-box; padding:9px 11px; border:1.5px solid #C8C0AE; border-radius:8px; font-size:13px; color:#2C2010; margin-bottom:12px; font-family:'DM Sans',sans-serif;">
+      <label style="display:block; font-size:11px; font-weight:600; color:#7A6A50; margin-bottom:4px;">Descripción (opcional)</label>
+      <input id="rec-link-desc" type="text" placeholder="Breve descripción" style="width:100%; box-sizing:border-box; padding:9px 11px; border:1.5px solid #C8C0AE; border-radius:8px; font-size:13px; color:#2C2010; font-family:'DM Sans',sans-serif;">
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:18px;">
+        <button onclick="recAddLinkClose()" style="padding:8px 15px; background:transparent; border:1.5px solid #C8C0AE; border-radius:8px; font-size:12px; font-weight:600; color:#7A6A50; cursor:pointer; font-family:'DM Sans',sans-serif;">Cancelar</button>
+        <button onclick="recAddLinkSave()" style="padding:8px 15px; background:#C9A84C; border:none; border-radius:8px; font-size:12px; font-weight:700; color:#0B0A09; cursor:pointer; font-family:'DM Sans',sans-serif;">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+<script src="js/recursos.js"></script>
+  </div><!-- /main-content -->
+</div><!-- /larry-shell -->
+
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     GLOBAL JS
+═══════════════════════════════════════════════════════════════════ -->
+<script src="js/global.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FINANZAS JS
+═══════════════════════════════════════════════════════════════════ -->
+<script src="js/finanzas.js"></script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL DE CONFIRMACIÓN PROPIO (sustituye confirm() del browser)
+═══════════════════════════════════════════════════════════════════ -->
+<div id="custom-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,32,16,0.55);z-index:99999;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div id="custom-confirm-box" style="background:#EAE4D6;border:1px solid #BDB5A5;border-radius:14px;padding:28px 28px 22px;width:360px;max-width:92vw;box-shadow:0 16px 48px rgba(44,32,16,0.28);font-family:'DM Sans',sans-serif">
+    <div id="custom-confirm-msg" style="font-size:14px;color:#2C2010;line-height:1.55;margin-bottom:22px;font-weight:500"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button id="custom-confirm-no"  style="padding:8px 18px;border-radius:8px;border:1.5px solid #BDB5A5;background:transparent;color:#7A6A50;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s">Cancelar</button>
+      <button id="custom-confirm-yes" style="padding:8px 18px;border-radius:8px;border:none;background:#F85149;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     GLOBAL SEARCH Cmd+K
+═══════════════════════════════════════════════════════════════════ -->
+<div id="global-search-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,32,16,0.60);z-index:99998;align-items:flex-start;justify-content:center;backdrop-filter:blur(6px);padding-top:80px">
+  <div style="background:#EAE4D6;border:1px solid #BDB5A5;border-radius:14px;width:560px;max-width:94vw;box-shadow:0 20px 60px rgba(44,32,16,0.32);overflow:hidden;font-family:'DM Sans',sans-serif">
+    <div style="display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid #CFC9B8;gap:10px">
+      <span style="font-size:16px;color:#9A8A6A">🔍</span>
+      <input id="global-search-input" type="text" placeholder="Buscar en todos los módulos..." autocomplete="off"
+        style="flex:1;background:transparent;border:none;outline:none;font-size:15px;color:#2C2010;font-family:'DM Sans',sans-serif">
+      <span style="font-size:10px;color:#9A8A6A;background:#DDD7C8;padding:3px 7px;border-radius:4px;font-family:'IBM Plex Mono',monospace">ESC</span>
+    </div>
+    <div id="global-search-results" style="max-height:380px;overflow-y:auto;padding:8px 0"></div>
+    <div style="padding:10px 18px;border-top:1px solid #CFC9B8;display:flex;gap:16px">
+      <span style="font-size:10px;color:#9A8A6A;font-family:'IBM Plex Mono',monospace">💰 Finanzas</span>
+      <span style="font-size:10px;color:#9A8A6A;font-family:'IBM Plex Mono',monospace">🎤 Clientes</span>
+      <span style="font-size:10px;color:#9A8A6A;font-family:'IBM Plex Mono',monospace">⬡ CRM</span>
+      <span style="font-size:10px;color:#9A8A6A;font-family:'IBM Plex Mono',monospace">📝 Notas</span>
+      <span style="font-size:10px;color:#9A8A6A;font-family:'IBM Plex Mono',monospace">📅 Agenda</span>
+      <span style="font-size:10px;color:#9A8A6A;font-family:'IBM Plex Mono',monospace">🗂️ MyBoard</span>
+    </div>
+  </div>
+</div>
+
+<script src="js/confirm-search.js"></script>
+
+
+<script src="js/mobile.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NOTAS JS
+═══════════════════════════════════════════════════════════════════ -->
+<script src="js/notas.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CRM JS  (React)
+═══════════════════════════════════════════════════════════════════ -->
+<script src="js/crm.js" defer></script>
+
+
+<script src="js/agenda.js"></script>
+<script src="js/ventas.js"></script>
+<script src="js/hoy.js"></script>
+<script src="js/fiscal.js"></script>
+
+
+
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LARRY OS · GITHUB SYNC MODULE · v1.5
+     Sincroniza localStorage con un repo privado de GitHub.
+     Patrón: localStorage primario, GitHub como espejo en background.
+     ═══════════════════════════════════════════════════════════════ -->
+<style>
+/* ─── Sidebar indicator ─────────────────────────────────────── */
+#lsync-bar {
+  display: flex; gap: 6px; margin-top: 8px;
+  border-top: 1px dashed #CFC9B8; padding-top: 10px;
+}
+#lsync-status {
+  flex: 1; display: flex; align-items: center; gap: 6px;
+  padding: 6px 8px; background: rgba(44,32,16,0.04);
+  border: 1px solid #BDB5A5; border-radius: 6px;
+  color: #7A6A50; font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; font-weight: 500; cursor: pointer;
+  letter-spacing: .04em; transition: all .15s; text-align: left;
+  overflow: hidden;
+}
+#lsync-status:hover { background: rgba(201,168,76,0.12); border-color: #C9A84C; }
+.lsync-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lsync-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0; box-shadow: 0 0 0 2px rgba(255,255,255,0.4);
+}
+.lsync-ok           { background: #4CAF50; }
+.lsync-syncing      { background: #C9A84C; animation: lsync-pulse 1.2s infinite; }
+.lsync-error        { background: #E74C3C; }
+.lsync-offline      { background: #95A5A6; }
+.lsync-unconfigured { background: #BDB5A5; }
+@keyframes lsync-pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+#lsync-cog {
+  width: 28px; padding: 0; background: rgba(44,32,16,0.05);
+  border: 1px solid #BDB5A5; border-radius: 6px;
+  color: #7A6A50; font-size: 13px; cursor: pointer; transition: all .15s;
+}
+#lsync-cog:hover { background: rgba(201,168,76,0.18); color: #C9A84C; border-color: #C9A84C; }
+
+/* ─── Config modal ──────────────────────────────────────────── */
+#lsync-modal {
+  position: fixed; inset: 0; background: rgba(44,32,16,0.55);
+  display: none; align-items: center; justify-content: center;
+  z-index: 9999; backdrop-filter: blur(3px);
+}
+#lsync-modal.show { display: flex; }
+.lsync-card {
+  background: #F5F0E4; border-radius: 14px;
+  width: 92%; max-width: 460px; max-height: 90vh; overflow-y: auto;
+  padding: 26px; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  border: 1px solid #CFC9B8;
+}
+.lsync-card h2 {
+  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
+  color: #2C2010; margin-bottom: 4px; letter-spacing: .02em;
+}
+.lsync-card .lsync-sub {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  color: #9A8A6A; letter-spacing: .15em; margin-bottom: 18px;
+}
+.lsync-field { margin-bottom: 14px; }
+.lsync-field label {
+  display: block; font-size: 11px; font-weight: 600; color: #6A5A40;
+  margin-bottom: 4px; font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: .08em; text-transform: uppercase;
+}
+.lsync-field input {
+  width: 100%; padding: 9px 11px; border: 1px solid #BDB5A5;
+  border-radius: 7px; background: #FFF; color: #2C2010;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
+}
+.lsync-field input:focus { border-color: #C9A84C; box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
+.lsync-field .lsync-hint { font-size: 10px; color: #9A8A6A; margin-top: 3px; }
+.lsync-actions { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+.lsync-btn {
+  padding: 9px 14px; border-radius: 7px; border: 1px solid #BDB5A5;
+  background: #FFF; color: #2C2010; font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s;
+  letter-spacing: .03em;
+}
+.lsync-btn:hover { background: #EDE8DB; }
+.lsync-btn.primary { background: #C9A84C; color: #FFF; border-color: #C9A84C; }
+.lsync-btn.primary:hover { background: #B89740; }
+.lsync-btn.danger { color: #E74C3C; border-color: #E74C3C; }
+.lsync-btn.danger:hover { background: #FDF1EF; }
+.lsync-btn:disabled { opacity: .5; cursor: not-allowed; }
+.lsync-status-line {
+  font-size: 11px; color: #6A5A40; margin-top: 12px;
+  padding: 8px 10px; background: rgba(44,32,16,0.04);
+  border-radius: 6px; font-family: 'IBM Plex Mono', monospace;
+  display: none; word-break: break-word;
+}
+.lsync-status-line.show { display: block; }
+.lsync-status-line.ok { color: #2E7D32; background: rgba(76,175,80,0.1); }
+.lsync-status-line.err { color: #C62828; background: rgba(231,76,60,0.1); }
+.lsync-help {
+  margin-top: 16px; padding: 12px; background: rgba(201,168,76,0.08);
+  border-left: 3px solid #C9A84C; border-radius: 4px;
+  font-size: 11px; color: #6A5A40; line-height: 1.5;
+}
+.lsync-help a { color: #C9A84C; font-weight: 600; }
+</style>
+
+<!-- Modal de configuración -->
+<div id="lsync-modal">
+  <div class="lsync-card">
+    <h2>Sincronización con GitHub</h2>
+    <div class="lsync-sub">CONFIGURACIÓN · v2 · combina cambios entre dispositivos</div>
+
+    <div class="lsync-field">
+      <label>Personal Access Token (PAT)</label>
+      <input type="password" id="lsync-token" placeholder="github_pat_..." autocomplete="off">
+      <div class="lsync-hint">Usá un token <b>fine-grained</b> (github_pat_) con acceso SOLO al repo de datos y permiso Contents: lectura/escritura. Los tokens clásicos (ghp_) dan acceso a todos tus repos. <a href="https://github.com/settings/tokens?type=beta" target="_blank">Generar →</a></div>
+    </div>
+
+    <div class="lsync-field">
+      <label>Usuario / Organización</label>
+      <input type="text" id="lsync-owner" placeholder="tu-usuario-github">
+    </div>
+
+    <div class="lsync-field">
+      <label>Repositorio (privado)</label>
+      <input type="text" id="lsync-repo" placeholder="larry-os-data">
+      <div class="lsync-hint">Repo aparte solo para datos. Si no existe, creálo en GitHub primero (puede estar vacío).</div>
+    </div>
+
+    <div class="lsync-field">
+      <label>Archivo / Rama</label>
+      <input type="text" id="lsync-path" placeholder="larry-os-v2-data.json" value="larry-os-v2-data.json">
+      <input type="text" id="lsync-branch" placeholder="main" value="main" style="margin-top:6px">
+    </div>
+
+    <div id="lsync-status-line" class="lsync-status-line"></div>
+
+    <div class="lsync-actions">
+      <button class="lsync-btn" onclick="LarrySync.testConnection()">Probar conexión</button>
+      <button class="lsync-btn primary" onclick="LarrySync.saveConfig()">Guardar y sincronizar</button>
+      <button class="lsync-btn" onclick="LarrySync.pullFromGitHub()" id="lsync-pull-btn">⬇ Descargar de GitHub</button>
+      <button class="lsync-btn danger" onclick="LarrySync.clearConfig()">Eliminar</button>
+      <button class="lsync-btn" onclick="LarrySync.closeModal()" style="margin-left:auto">Cerrar</button>
+    </div>
+
+    <div class="lsync-help">
+      <strong>¿Cómo funciona?</strong> Tus datos siguen viviendo en este navegador (localStorage). Cada vez que hay cambios, el OS los sube en silencio a tu repo privado de GitHub. Si abrís el OS en otro dispositivo, descargás los datos desde ahí. El token solo necesita permiso <em>Contents: Read & write</em> sobre ese repo.
+    </div>
+  </div>
+</div>
+
+<script src="js/sync.js"></script>
+
+</body>
+</html>

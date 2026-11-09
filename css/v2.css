@@ -1,0 +1,91 @@
+/* ═══ LARRY OS v2 · estilos nuevos (Hoy, accesibilidad, móvil) ═══ */
+
+/* ─── Badge en la barra lateral ─── */
+.sb-badge { margin-left: auto; background: #111; color: #fff; border-radius: 10px; font-size: 10px; font-weight: 700; padding: 1px 7px; line-height: 16px; }
+
+/* ─── HOY ─── */
+#module-hoy { overflow-y: auto; background: #F5F0E4; }
+#module-hoy.active { display: block; }
+#hoy-root { max-width: 1180px; margin: 0 auto; padding: 28px 28px 60px; color: #1d1a14; font-family: 'DM Sans', sans-serif; }
+.hoy-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.hoy-date { font-size: 12px; text-transform: capitalize; color: #5f5646; letter-spacing: .02em; }
+.hoy-head h1 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; margin: 2px 0 4px; color: #111; }
+.hoy-lead { font-size: 14px; color: #3d362a; }
+.hoy-quick { display: flex; gap: 8px; flex-wrap: wrap; }
+.hoy-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+.hoy-kpis > div { background: #fff; border: 1px solid #ddd5c4; border-radius: 12px; padding: 12px 14px; }
+.hoy-kpis span { display: block; font-size: 11px; color: #5f5646; margin-bottom: 4px; }
+.hoy-kpis b { font-size: 22px; font-weight: 700; color: #111; }
+.hoy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.hoy-card { background: #fff; border: 1px solid #ddd5c4; border-radius: 14px; padding: 14px 16px; min-width: 0; }
+.hoy-card header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.hoy-card h2 { font-size: 15px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 8px; }
+.hoy-count { background: #111; color: #fff; font-size: 11px; border-radius: 10px; padding: 1px 8px; }
+.hoy-empty { font-size: 13px; color: #6b6253; padding: 8px 0 4px; }
+.hoy-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #eee7da; }
+.hoy-row:first-of-type { border-top: none; }
+.hoy-main { flex: 1; min-width: 0; font-size: 14px; }
+.hoy-main b { margin-right: 6px; }
+.hoy-sub { font-size: 12px; color: #5f5646; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hoy-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.hoy-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: #efe9dc; color: #4a4232; vertical-align: 1px; }
+.hoy-tag-hoy { background: #fff2c6; color: #6b4b00; }
+.hoy-tag-late { background: #fde2e1; color: #9b1c1c; }
+.hoy-btn { font: 600 12px 'DM Sans', sans-serif; background: #fff; color: #111; border: 1px solid #cfc6b4; border-radius: 8px; padding: 7px 11px; cursor: pointer; text-decoration: none; white-space: nowrap; min-height: 32px; }
+.hoy-btn:hover { background: #f5f1e8; }
+.hoy-primary { background: #111; color: #fff; border-color: #111; }
+.hoy-primary:hover { background: #333; }
+.hoy-wa { border-color: #b7dfc3; }
+.hoy-link { background: none; border: none; color: #3d362a; font: 600 12px 'DM Sans', sans-serif; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 4px 0; }
+.hoy-pick { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100004; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.hoy-pick-box { background: #fff; border-radius: 14px; padding: 18px; width: 100%; max-width: 380px; max-height: 80vh; overflow: auto; }
+.hoy-pick-box h3 { font-size: 16px; margin-bottom: 10px; }
+.hoy-pick-box button { display: flex; justify-content: space-between; width: 100%; text-align: left; background: #fff; border: 1px solid #e3dccd; border-radius: 10px; padding: 11px 12px; margin-bottom: 8px; cursor: pointer; font: 14px 'DM Sans', sans-serif; }
+.hoy-pick-box button span { color: #5f5646; font-size: 12px; }
+.hoy-pick-box .hoy-pick-cancel { justify-content: center; color: #5f5646; }
+
+/* ─── Accesibilidad: foco visible con teclado ─── */
+:focus-visible { outline: 2px solid #111 !important; outline-offset: 2px; }
+button:focus:not(:focus-visible) { outline: none; }
+
+/* ─── Móvil ─── */
+@media (max-width: 900px) {
+  .hoy-grid { grid-template-columns: 1fr; }
+  .hoy-kpis { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  /* El botón ☰ ya no tapa títulos: barra superior fija */
+  #main-content { padding-top: 52px !important; }
+  #sb-hamburger { top: 8px !important; left: 10px !important; }
+  body::before { content: 'LARRY OS'; position: fixed; top: 0; left: 0; right: 0; height: 52px; background: #111; color: #fff; z-index: 98; display: flex; align-items: center; justify-content: center; font: 700 13px 'DM Sans', sans-serif; letter-spacing: .25em; pointer-events: none; }
+  #hoy-root { padding: 18px 14px 60px; }
+  .hoy-head h1 { font-size: 24px; }
+  .hoy-row { flex-wrap: wrap; }
+  .hoy-actions { width: 100%; justify-content: flex-start; }
+  /* iOS no hace zoom en inputs de 16px */
+  input, select, textarea { font-size: 16px !important; }
+  /* Tablas de Finanzas: desplazamiento dentro de su caja, no de la página */
+  .table-wrap, .fin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* Finanzas: pestañas sin el hueco de 210px */
+#fin-subnav { left: 0 !important; }
+
+/* ─── FISCAL ─── */
+#module-fiscal { overflow-y: auto; background: #F5F0E4; }
+#module-fiscal.active { display: block; }
+#fiscal-root { max-width: 1180px; margin: 0 auto; padding: 28px 28px 60px; font-family: 'DM Sans', sans-serif; color: #1d1a14; }
+.fis-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.fis-head h1 { font-family: 'Playfair Display', serif; font-size: 26px; color: #111; }
+.fis-head p { font-size: 13px; color: #3d362a; max-width: 640px; }
+.fis-year { font-size: 13px; font-weight: 600; }
+.fis-year select { margin-left: 6px; padding: 6px 8px; border-radius: 8px; border: 1px solid #cfc6b4; }
+.fis-table-wrap { overflow-x: auto; }
+.fis-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.fis-table th { text-align: left; font-size: 11px; color: #5f5646; padding: 8px; border-bottom: 1px solid #ddd5c4; white-space: nowrap; }
+.fis-table td { padding: 8px; border-bottom: 1px solid #eee7da; white-space: nowrap; }
+.fis-strong td { font-weight: 700; }
+.fis-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.fis-f span { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.fis-f input { width: 100%; padding: 9px 10px; border: 1px solid #cfc6b4; border-radius: 8px; font: 14px 'DM Sans', sans-serif; }
+@media (max-width: 768px) { #fiscal-root { padding: 18px 14px 60px; } }
