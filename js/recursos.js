@@ -13,7 +13,9 @@
     function recRenderCustom(){
       const grid = document.getElementById('rec-custom-grid');
       if (!grid) return;
-      const links = recLoadLinks();
+      // los links que ya tienen tarjeta fija en alguna categoría no se repiten en «Mis Enlaces»
+      const fijos = new Set([...document.querySelectorAll('#module-recursos a.rec-card')].map(a => a.href.replace(/\/+$/, '')));
+      const links = recLoadLinks().filter(l => !fijos.has(String(l.url || '').replace(/\/+$/, '')));
       const empty = document.getElementById('rec-custom-empty');
       if (empty) empty.style.display = links.length ? 'none' : '';
       grid.innerHTML = links.map(l => {
